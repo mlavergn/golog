@@ -53,35 +53,35 @@ var _Outputf _outputf = log.Printf
 var _OutputExit _output = log.Fatalln
 var _OutputExitf _outputf = log.Fatalf
 
-// Debug accepts a value, outputting when LOG_LEVEL <= LOG_DEBUG
-var Debug _output = _DevNull
+// LogDebug accepts a value, outputting when LOG_LEVEL <= LOG_DEBUG
+var LogDebug _output = _DevNull
 
-// Debugf accepts a format mask and a value, outputting when LOG_LEVEL <= LOG_DEBUG
-var Debugf _outputf = _DevNullf
+// LogDebugf accepts a format mask and a value, outputting when LOG_LEVEL <= LOG_DEBUG
+var LogDebugf _outputf = _DevNullf
 
-// Info accepts a value, outputting when LOG_LEVEL <= LOG_INFO
-var Info _output = _Output
+// LogInfo accepts a value, outputting when LOG_LEVEL <= LOG_INFO
+var LogInfo _output = _Output
 
-// Infof accepts a format mask and a value, outputting when LOG_LEVEL <= LOG_INFO
-var Infof _outputf = _Outputf
+// LogInfof accepts a format mask and a value, outputting when LOG_LEVEL <= LOG_INFO
+var LogInfof _outputf = _Outputf
 
-// Warn accepts a value, outputting when LOG_LEVEL <= LOG_WARN
-var Warn _output = _Output
+// LogWarn accepts a value, outputting when LOG_LEVEL <= LOG_WARN
+var LogWarn _output = _Output
 
-// Warnf accepts a format mask and a value, outputting when LOG_LEVEL <= LOG_WARN
-var Warnf _outputf = _Outputf
+// LogWarnf accepts a format mask and a value, outputting when LOG_LEVEL <= LOG_WARN
+var LogWarnf _outputf = _Outputf
 
-// Error accepts a value, outputting when LOG_LEVEL <= LOG_ERROR
-var Error _output = _Output
+// LogError accepts a value, outputting when LOG_LEVEL <= LOG_ERROR
+var LogError _output = _Output
 
-// Errorf accepts a format mask and a value, outputting when LOG_LEVEL <= LOG_ERROR
-var Errorf _outputf = _Outputf
+// LogErrorf accepts a format mask and a value, outputting when LOG_LEVEL <= LOG_ERROR
+var LogErrorf _outputf = _Outputf
 
-// Fatal accepts a value, outputting when LOG_LEVEL <= LOG_FATAL, then exitting
-var Fatal _output = _OutputExit
+// LogFatal accepts a value, outputting when LOG_LEVEL <= LOG_FATAL, then exitting
+var LogFatal _output = _OutputExit
 
-// Fatalf accepts a format mask and a value, outputting when LOG_LEVEL <= LOG_FATAL, then exitting
-var Fatalf _outputf = _OutputExitf
+// LogFatalf accepts a format mask and a value, outputting when LOG_LEVEL <= LOG_FATAL, then exitting
+var LogFatalf _outputf = _OutputExitf
 
 //
 // Modify the log level.
@@ -89,50 +89,50 @@ var Fatalf _outputf = _OutputExitf
 //
 func SetLogLevel(level int) {
 	if level <= LOG_DEBUG {
-		Debug = _Output
-		Debugf = _Outputf
+		LogDebug = _Output
+		LogDebugf = _Outputf
 	} else {
-		Debug = _DevNull
-		Debugf = _DevNullf
+		LogDebug = _DevNull
+		LogDebugf = _DevNullf
 	}
 
 	if level <= LOG_INFO {
-		Info = _Output
-		Infof = _Outputf
+		LogInfo = _Output
+		LogInfof = _Outputf
 	} else {
-		Info = _DevNull
-		Infof = _DevNullf
+		LogInfo = _DevNull
+		LogInfof = _DevNullf
 	}
 
 	if level <= LOG_WARN {
-		Warn = _Output
-		Warnf = _Outputf
+		LogWarn = _Output
+		LogWarnf = _Outputf
 	} else {
-		Warn = _DevNull
-		Warnf = _DevNullf
+		LogWarn = _DevNull
+		LogWarnf = _DevNullf
 	}
 
 	if level <= LOG_ERROR {
-		Error = _Output
-		Errorf = _Outputf
+		LogError = _Output
+		LogErrorf = _Outputf
 	} else {
-		Error = _DevNull
-		Errorf = _DevNullf
+		LogError = _DevNull
+		LogErrorf = _DevNullf
 	}
 
 	if level <= LOG_FATAL {
-		Fatal = log.Fatalln
-		Fatalf = log.Fatalf
+		LogFatal = log.Fatalln
+		LogFatalf = log.Fatalf
 	} else {
-		Fatal = _DevNull
-		Fatalf = _DevNullf
+		LogFatal = _DevNull
+		LogFatalf = _DevNullf
 	}
 }
 
 //
 // Dump to file
 //
-func DumpFile(modulename string, output string) {
+func LogDumpFile(modulename string, output string) {
 	usr, err := user.Current()
 	if err == nil {
 		path := usr.HomeDir + "/log/" + modulename + "/"
@@ -169,5 +169,5 @@ func TimerMark() {
 // TimerMeasure outputs at level LOG_DEBUG the elapsed time since the last call to TimerMark
 //
 func TimerMeasure() {
-	Debugf("ELAPSED [%s]", time.Since(_timerShared))
+	LogDebugf("ELAPSED [%s]", time.Since(_timerShared))
 }
