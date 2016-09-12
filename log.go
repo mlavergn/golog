@@ -12,6 +12,7 @@ import (
 	"log"
 	"os"
 	"os/user"
+	"path"
 	"strconv"
 	"time"
 )
@@ -135,20 +136,22 @@ func SetLogLevel(level int) {
 func LogDumpFile(modulename string, output string) {
 	usr, err := user.Current()
 	if err == nil {
-		path := usr.HomeDir + "/log/" + modulename + "/"
-
 		epoch := strconv.Itoa(int(time.Now().Unix()))
-		logpath := path + epoch + ".log"
+		logFile := epoch + ".log"
+	
+	  logPath := path.Join(usr.HomeDir, "log", modulename)
 
-		_, err = os.Stat(path)
+		_, err = os.Stat(logPath)
 		if os.IsNotExist(err) {
-			os.MkdirAll(path, os.ModePerm)
+			os.MkdirAll(logPath, os.ModePerm)
 		}
-		err = ioutil.WriteFile(logpath, []byte(output), 0644)
+
+	  logPath = path.Join(logPath, logFile)
+		err = ioutil.WriteFile(logPath, []byte(output), 0644)
 	}
 
 	if err != nil {
-		log.Println(err)
+		LogError(err)
 	}
 }
 
