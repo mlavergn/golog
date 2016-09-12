@@ -21,12 +21,12 @@ import (
 //
 const (
 	LOG_ALL   = iota
-	LOG_DEBUG = iota
-	LOG_INFO  = iota
-	LOG_WARN  = iota
-	LOG_ERROR = iota
-	LOG_FATAL = iota
-	LOG_OFF   = iota
+	LOG_DEBUG
+	LOG_INFO
+	LOG_WARN
+	LOG_ERROR
+	LOG_FATAL
+	LOG_OFF
 )
 
 //
@@ -34,8 +34,8 @@ const (
 //
 const (
 	LOG_STDOUT = iota
-	LOG_STDERR = iota
-	LOG_FILE   = iota
+	LOG_STDERR
+	LOG_FILE
 )
 
 func _DevNull(v ...interface{}) {
