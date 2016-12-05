@@ -8,12 +8,16 @@
 package golog
 
 import (
+	"io"
 	"io/ioutil"
 	"log"
+	"log/syslog"
 	"os"
 	"os/user"
 	"path"
 	"strconv"
+	"strings"
+	"sync"
 	"time"
 )
 
@@ -21,7 +25,7 @@ import (
 // Log levels
 //
 const (
-	LOG_ALL   = iota
+	LOG_ALL = iota
 	LOG_DEBUG
 	LOG_INFO
 	LOG_WARN
@@ -37,6 +41,7 @@ const (
 	LOG_STDOUT = iota
 	LOG_STDERR
 	LOG_FILE
+	LOG_SYSTEM
 )
 
 func _DevNull(v ...interface{}) {
@@ -89,6 +94,56 @@ var LogFatalf _outputf = _OutputExitf
 // The default log level is LOG_WARN.
 //
 func SetLogLevel(level int) {
+	LogConfigure(level, LOG_STDOUT)
+}
+
+//
+// singleton
+//
+
+var (
+	once sync.Once
+)
+
+//
+// logConfigOutput configures the logger.
+//
+func LogConfigure(level int, dest int) {
+	once.Do(func() {
+		log.SetFlags(log.Lshortfile | log.LstdFlags | log.LUTC | log.Lmicroseconds)
+	})
+
+	// if level == LOG_OFF, shutdown all logging
+	if level == LOG_OFF {
+		log.SetOutput(ioutil.Discard)
+		return
+	}
+
+	switch dest {
+	case LOG_STDOUT:
+	case LOG_STDERR:
+		log.SetOutput(os.Stderr)
+	case LOG_FILE:
+		logPath := obtainLogDirectory(obtainProcessName())
+		logfile, err := os.OpenFile(logPath, os.O_WRONLY|os.O_CREATE, 0640)
+		if err == nil {
+			gologger := log.New(io.MultiWriter(logfile, os.Stdout), log.Prefix(), log.Flags())
+			_Output = gologger.Println
+			_Outputf = gologger.Printf
+			_OutputExit = gologger.Fatalln
+			_OutputExitf = gologger.Fatalf
+		}
+	case LOG_SYSTEM:
+		gologger, err := syslog.NewLogger(syslog.LOG_NOTICE, log.Flags())
+		gologgerErr, errErr := syslog.NewLogger(syslog.LOG_ERR, log.Flags())
+		if err == nil && errErr == nil {
+			_Output = gologger.Println
+			_Outputf = gologger.Printf
+			_OutputExit = gologgerErr.Fatalln
+			_OutputExitf = gologgerErr.Fatalf
+		}
+	}
+
 	if level <= LOG_DEBUG {
 		LogDebug = _Output
 		LogDebugf = _Outputf
@@ -131,27 +186,53 @@ func SetLogLevel(level int) {
 }
 
 //
-// Dump to file
+// obtainProcessName derives te process name from argv
 //
-func LogDumpFile(modulename string, output string) {
+func obtainProcessName() (result string) {
+	result = os.Args[0]
+	last := strings.LastIndex(result, "/")
+	if last > -1 {
+		result = result[last+1:]
+		result = strings.Replace(result, " ", "_", -1)
+	}
+
+	return
+}
+
+//
+// obtainLogDirectory derives and creates the log director path for a given log name
+//
+func obtainLogDirectory(logName string) (result string) {
 	usr, err := user.Current()
 	if err == nil {
-		epoch := strconv.Itoa(int(time.Now().Unix()))
-		logFile := epoch + ".log"
-	
-	  logPath := path.Join(usr.HomeDir, "log", modulename)
+		logPath := path.Join(usr.HomeDir, "log", logName)
 
 		_, err = os.Stat(logPath)
 		if os.IsNotExist(err) {
 			os.MkdirAll(logPath, os.ModePerm)
 		}
 
-	  logPath = path.Join(logPath, logFile)
-		err = ioutil.WriteFile(logPath, []byte(output), 0644)
+		epoch := strconv.Itoa(int(time.Now().Unix()))
+		logFile := epoch + ".log"
+
+		result = path.Join(logPath, logFile)
 	}
 
-	if err != nil {
-		LogError(err)
+	return
+}
+
+//
+// Dump to file
+//
+func LogDumpFile(modulename string, output string) {
+	logPath := obtainLogDirectory(modulename)
+
+	if len(logPath) > 0 {
+		err := ioutil.WriteFile(logPath, []byte(output), 0644)
+
+		if err != nil {
+			LogError(err)
+		}
 	}
 }
 
@@ -159,18 +240,18 @@ func LogDumpFile(modulename string, output string) {
 // Performance timing routines
 //
 
-var _timerShared time.Time
+var timerShared time.Time
 
 //
 // TimerMark marks the beginning of a timing period
 //
 func TimerMark() {
-	_timerShared = time.Now()
+	timerShared = time.Now()
 }
 
 //
 // TimerMeasure outputs at level LOG_DEBUG the elapsed time since the last call to TimerMark
 //
 func TimerMeasure() {
-	LogDebugf("ELAPSED [%s]", time.Since(_timerShared))
+	LogDebugf("ELAPSED [%s]", time.Since(timerShared))
 }
