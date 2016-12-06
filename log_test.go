@@ -5,33 +5,33 @@
 package golog
 
 import (
-	"testing"
+	"fmt"
+	"io/ioutil"
 	"os"
 	"strings"
+	"testing"
 	"time"
-	"io/ioutil"
-	"fmt"
 )
 
 func captureStdout(fn func(v ...interface{}), arg string) (result string) {
 	xstdout := os.Stdout
-  r, w, _ := os.Pipe()
-  os.Stdout = w
+	r, w, _ := os.Pipe()
+	os.Stdout = w
 
-  // fn(arg) - this isn't capturing stdout, need to debug test case!
-  fmt.Println(arg)
+	// fn(arg) - this isn't capturing stdout, need to debug test case!
+	fmt.Println(arg)
 
-  go func() {
-	  time.Sleep(time.Second * 1)
+	go func() {
+		time.Sleep(time.Second * 1)
 		w.Close()
 	}()
 
-  bytes, _ := ioutil.ReadAll(r)
-  result = strings.TrimSpace(string(bytes))
+	bytes, _ := ioutil.ReadAll(r)
+	result = strings.TrimSpace(string(bytes))
 
-  os.Stdout = xstdout
+	os.Stdout = xstdout
 
-  return
+	return
 }
 
 func TestLog(t *testing.T) {

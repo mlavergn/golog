@@ -121,6 +121,7 @@ func LogConfigure(level int, dest int) {
 
 	switch dest {
 	case LOG_STDOUT:
+		log.SetOutput(os.Stdout)
 	case LOG_STDERR:
 		log.SetOutput(os.Stderr)
 	case LOG_FILE:
