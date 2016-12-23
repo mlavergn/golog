@@ -187,7 +187,7 @@ func LogConfigure(level int, dest int) {
 }
 
 //
-// obtainProcessName derives te process name from argv
+// obtainProcessName derives the process name from argv
 //
 func obtainProcessName() (result string) {
 	result = os.Args[0]
