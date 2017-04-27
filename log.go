@@ -254,5 +254,5 @@ func TimerMark() {
 // TimerMeasure outputs at level LOG_DEBUG the elapsed time since the last call to TimerMark
 //
 func TimerMeasure() {
-	LogDebugf("ELAPSED [%s]", time.Since(timerShared))
+	LogDebugf("ELAPSED [%s]ns", time.Since(timerShared))
 }
