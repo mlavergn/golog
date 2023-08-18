@@ -33,7 +33,7 @@ github:
 
 release:
 	zip -r ${PROJECT}.zip LICENSE README.md Makefile *.go
-	hub release create -m "${VERSION} - ${PROJECT}" -a ${PROJECT}.zip -t master "v${VERSION}"
+	gh release create v${VERSION} ./${PROJECT}.zip --target master --notes "${VERSION} - ${PROJECT}"
 	open "https://github.com/${REPO}/${PROJECT}/releases"
 
 st:
