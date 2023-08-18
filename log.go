@@ -1,10 +1,3 @@
-// Copyright 2016, Marc Lavergne <mlavergn@gmail.com>. All rights reserved.
-// Use of this source code is governed by the MIT
-// license that can be found in the LICENSE file.
-
-//
-// Package golog provides performance sensitive logging routines.
-//
 package golog
 
 import (
@@ -21,9 +14,7 @@ import (
 	"time"
 )
 
-//
 // Log levels
-//
 const (
 	LOG_ALL = iota
 	LOG_DEBUG
@@ -34,9 +25,7 @@ const (
 	LOG_OFF
 )
 
-//
 // Log destinations
-//
 const (
 	LOG_STDOUT = iota
 	LOG_STDERR
@@ -89,10 +78,8 @@ var LogFatal _output = _OutputExit
 // LogFatalf accepts a format mask and a value, outputting when LOG_LEVEL <= LOG_FATAL, then exitting
 var LogFatalf _outputf = _OutputExitf
 
-//
 // Modify the log level.
 // The default log level is LOG_WARN.
-//
 func SetLogLevel(level int) {
 	LogConfigure(level, LOG_STDOUT)
 }
@@ -105,9 +92,7 @@ var (
 	once sync.Once
 )
 
-//
 // logConfigOutput configures the logger.
-//
 func LogConfigure(level int, dest int) {
 	once.Do(func() {
 		log.SetFlags(log.Lshortfile | log.LstdFlags | log.LUTC | log.Lmicroseconds)
@@ -186,9 +171,7 @@ func LogConfigure(level int, dest int) {
 	}
 }
 
-//
 // obtainProcessName derives the process name from argv
-//
 func obtainProcessName() (result string) {
 	result = os.Args[0]
 	last := strings.LastIndex(result, "/")
@@ -200,9 +183,7 @@ func obtainProcessName() (result string) {
 	return
 }
 
-//
 // obtainLogDirectory derives and creates the log director path for a given log name
-//
 func obtainLogDirectory(logName string) (result string) {
 	usr, err := user.Current()
 	if err == nil {
@@ -222,9 +203,7 @@ func obtainLogDirectory(logName string) (result string) {
 	return
 }
 
-//
 // Dump to file
-//
 func LogDumpFile(modulename string, output string) {
 	logPath := obtainLogDirectory(modulename)
 
@@ -243,16 +222,12 @@ func LogDumpFile(modulename string, output string) {
 
 var timerShared time.Time
 
-//
 // TimerMark marks the beginning of a timing period
-//
 func TimerMark() {
 	timerShared = time.Now()
 }
 
-//
 // TimerMeasure outputs at level LOG_DEBUG the elapsed time since the last call to TimerMark
-//
 func TimerMeasure() {
 	LogDebugf("ELAPSED [%s]ns", time.Since(timerShared))
 }

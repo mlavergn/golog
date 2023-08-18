@@ -1,7 +1,3 @@
-// Copyright 2016, Marc Lavergne <mlavergn@gmail.com>. All rights reserved.
-// Use of this source code is governed by the MIT
-// license that can be found in the LICENSE file.
-
 package golog
 
 import (
@@ -14,7 +10,7 @@ import (
 )
 
 func captureStdout(fn func(v ...interface{}), arg string) (result string) {
-	xstdout := os.Stdout
+	stdout := os.Stdout
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 
@@ -29,7 +25,7 @@ func captureStdout(fn func(v ...interface{}), arg string) (result string) {
 	bytes, _ := ioutil.ReadAll(r)
 	result = strings.TrimSpace(string(bytes))
 
-	os.Stdout = xstdout
+	os.Stdout = stdout
 
 	return
 }
