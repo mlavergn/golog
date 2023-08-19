@@ -1,3 +1,5 @@
+[![Go Report](https://goreportcard.com/badge/github.com/mlavergn/golog)](https://goreportcard.com/report/github.com/mlavergn/golog)
+
 # Golog
 
 Minimal overhead leveled logging routines for golang.
