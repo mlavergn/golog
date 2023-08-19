@@ -1,4 +1,5 @@
 [![Go Report](https://goreportcard.com/badge/github.com/mlavergn/golog)](https://goreportcard.com/report/github.com/mlavergn/golog)
+[![GoDoc](https://godoc.org/github.com/mlavergn/gopack/src/golog?status.svg)](https://godoc.org/github.com/mlavergn/gopack/src/golog)
 
 # Golog
 
